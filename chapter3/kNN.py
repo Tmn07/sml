@@ -10,27 +10,29 @@
 # Output:     the most popular class label  
 #########################################  
 
+# http://blog.csdn.net/zouxy09/article/details/16955347
+# http://www.cnblogs.com/chaosimple/p/4153167.html
+
 from numpy import *
 import operator
 
+from sklearn import preprocessing
+
 
 def read_DataSet():
-    # todo:特征标准化..
     labels = genfromtxt('data.csv', delimiter=',', dtype='str', skip_header=1, usecols=(1))
     group = genfromtxt('data.csv', delimiter=',', skip_header=1)
     train_data = group[:400]
     train_labels = labels[:400]
     test_data = group[400:]
     test_labels = labels[400:]
-    return delete(train_data, [0, 1], axis=1), train_labels, delete(test_data, [0, 1], axis=1), test_labels
-
-
-# create a dataset which contains 4 samples with 2 classes
-def createDataSet():
-    # create a matrix: each row as a sample  
-    group = array([[1.0, 0.9], [1.0, 1.0], [0.1, 0.2], [0.0, 0.1]])
-    labels = ['A', 'A', 'B', 'B']  # four samples and two classes
-    return group, labels
+    # max-min
+    # mm_scaler = preprocessing.MinMaxScaler()
+    # return mm_scaler.fit_transform(delete(train_data, [0, 1], axis=1)), \
+    #        train_labels, mm_scaler.fit_transform(delete(test_data, [0, 1], axis=1)), test_labels
+    # z-score
+    return preprocessing.scale(delete(train_data, [0, 1], axis=1)),\
+           train_labels, preprocessing.scale(delete(test_data, [0, 1], axis=1)), test_labels
 
 
 # classify using kNN  
@@ -86,7 +88,6 @@ def compare(y, real_y):
 
 if __name__ == '__main__':
     dataSet, labels, test_data, test_labels = read_DataSet()
-
     k = 5
     plabels = []
     for testX in test_data:
@@ -95,4 +96,3 @@ if __name__ == '__main__':
         # print "Your input is:", testX, "and classified to class: ", outputLabel
     print(plabels)
     print(compare(plabels, test_labels))
-
